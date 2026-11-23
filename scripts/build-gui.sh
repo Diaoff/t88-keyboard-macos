@@ -33,9 +33,9 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>0.2.0</string>
+    <string>0.1.0</string>
     <key>CFBundleVersion</key>
-    <string>2</key>
+    <string>1</string>
     <key>LSMinimumSystemVersion</key>
     <string>11.0</string>
     <key>NSHighResolutionCapable</key>
@@ -43,7 +43,7 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
     <key>NSHumanReadableCopyright</key>
-    <string>Luma88 — T88 protocol notes in docs/protocol.md</string>
+    <string>© 2026 Luma88 contributors. Unofficial driver, not affiliated with LANGTU.</string>
 </dict>
 </plist>
 PLIST

@@ -33,7 +33,13 @@
 
 **建议用有线调节**：2.4G 通道只做单向确认，写入是否被采纳无法回读；有线有真正的「写-读」闭环，日志里能看到 `04 18 00 01 …` 这样的回显。2.4G 下改灯效没反应，插 USB 数据线重试即可。
 
-## 3. 编译与运行
+## 3. 下载与安装
+
+从 [Releases](https://github.com/Diaoff/t88-keyboard-macos/releases) 下载 `Luma88-0.1.0-macos-x86_64.zip`，解压后把 `Luma88.app` 拖进「应用程序」。
+
+首次打开会被 Gatekeeper 拦（ad-hoc 签名、未 notarize）：右键点图标选「打开」，或到「系统设置 → 隐私与安全性」点「仍要打开」。仅支持 Intel Mac（x86_64），Apple Silicon 需 Rosetta 或自行编译。
+
+## 4. 编译与运行
 
 依赖 Xcode Command Line Tools（自带 `swiftc`）与系统 `IOKit.framework`。
 
@@ -75,20 +81,20 @@ GUI 四个标签页：**灯效**（模式、颜色、亮度/速度/方向，右�
 
 报文布局、字段偏移、逐键数据块格式见 [docs/protocol.md](docs/protocol.md)；完整子命令见 `./bin/t88ctl`（无参数即打印用法）。
 
-## 4. 签名与权限
+## 5. 签名与权限
 
 - **本地编译运行**：`swiftc` 产物可直接运行，无需 Apple 开发者签名。
 - **读取键盘类接口**（Usage Page `0x01`）会被 TCC 拦截，需在「系统设置 → 隐私与安全性 → 输入监控」给终端或 `.app` 授权；只访问厂商集合（`0xFF60` / `0xFF13`）实测不需要。遇 `0xE00002E2` / `0xE00002C1` 即权限问题。
 - **对外分发**：需要 Developer ID `codesign` + notarization，否则 Gatekeeper 会拦住其他用户。
 
-## 5. 状态与限制
+## 6. 状态与限制
 
 - 键盘没有可用的「读回当前灯效 / 参数」命令，`light state`、`settings show` 显示的是上次写入的值；首次运行按默认值（模式 11 / 亮度 5 / 速度 3）。键盘上手动改过请先调回再用本工具。
 - 写入前会在 `~/.config/t88ctl/light.orig.json` 备份原状态，`light restore` 可回滚。
 - 逐键灯效与参数块的回读在有线通道尚未完全验证，`04 17` 读请求会返回未受理标记。
 - 未实现：改键、宏、DKS、磁轴逐键行程、LCD / GIF、固件升级。这些功能需要分段上传结构化数据块，报文格式未验证，不做猜测性实现。
 
-## 6. 目录结构
+## 7. 目录结构
 
 ```
 src/main.swift           CLI 入口、子命令实现、IOKit HID 通道
@@ -103,14 +109,14 @@ bin/t88ctl               编译产物（运行 scripts/build.sh 生成）
 dist/Luma88.app          编译产物（运行 scripts/build-gui.sh 生成）
 ```
 
-## 7. 排错
+## 8. 排错
 
 1. **找不到设备**：`./bin/t88ctl list` 看有没有 `0xFF13/0x01`（有线）或 `0xFF60/0x61`（2.4G）接口；换一根能传数据的 USB 线。
 2. **发了命令没反应**：先看日志有没有回帧，有线通道 `[2]=01` 才算受理；受理了但键盘没变，先发一次 `04 18` 再重发，或拔插一次让固件重新进入配置态。
 3. **2.4G 下灯效不生效**：接收器只确认不转发，改有线。
-4. **权限报错**：按 §4 到「输入监控」授权后重启终端 / 重新打开 app。
+4. **权限报错**：按 §5 到「输入监控」授权后重启终端 / 重新打开 app。
 
-## 8. 致谢
+## 9. 致谢
 
 灯效模式的取值编码与开源项目 [iiaiiappa/lt104-keyboard-linux](https://github.com/iiaiiappa/lt104-keyboard-linux) 交叉核对过；其余参数均为本机实测整理。
 
